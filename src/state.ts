@@ -6,8 +6,8 @@ import { combineReducers } from 'redux';
 const reducer = combineReducers({});
 
 export default function configureStore(preloadedState: any) {
-    const middlewares = [ReduxThunk];
-    const middlewareEnhancer = applyMiddleware(...middlewares);
+  const middlewares = [ReduxThunk];
+  const middlewareEnhancer = applyMiddleware(...middlewares);
 
     const enhancer = composeWithDevTools(middlewareEnhancer);
 
