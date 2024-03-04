@@ -2,20 +2,27 @@ import { Fragment, useEffect, useState } from "react";
 import { Project } from "./Project";
 import ProjectList from "./ProjectList";
 import { projectAPI } from "./projectAPI";
-// import { MOCK_PROJECTS } from "./MockProjects";
 
 function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [error, setError] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(1);
 
   const saveProject = (project: Project) => {
-    console.log("Saving project", project);
-    let updatedProjects = projects.map((p: Project) => {
-      return p.id === project.id ? project : p;
-    });
-    setProjects(updatedProjects);
+    projectAPI
+      .put(project)
+      .then((updatedProject) => {
+        let updatedProjects = projects.map((p: Project) => {
+          return p.id === project.id ? new Project(updatedProject) : p;
+        });
+        setProjects(updatedProjects);
+      })
+      .catch((e) => {
+        if (e instanceof Error) {
+          setError(e.message);
+        }
+      });
   };
 
   const handleMoreClick = () => {
@@ -25,9 +32,7 @@ function ProjectsPage() {
     async function loadProjects() {
       setLoading(true);
       try {
-        // const data = await projectAPI.get(1);
         const data = await projectAPI.get(currentPage);
-        // setError("");
         if (currentPage === 1) {
           setProjects(data);
         } else {
@@ -45,7 +50,7 @@ function ProjectsPage() {
   }, [currentPage]);
   return (
     <Fragment>
-      <h1>Project</h1>
+      <h1>Projects</h1>
       {error && (
         <div className="row">
           <div className="card large error">
